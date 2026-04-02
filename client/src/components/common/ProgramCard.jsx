@@ -52,7 +52,8 @@ export default function ProgramCard({ image, title, description, to, variant = '
         )}
         <Link
           to={to}
-          className="inline-flex items-center gap-1.5 text-primary-600 font-semibold text-sm hover:gap-3 transition-all duration-200"
+          className="inline-flex items-center gap-1.5 font-semibold text-sm hover:gap-3 transition-all duration-200"
+          style={{ color: 'var(--color-primary)' }}
         >
           Learn More <ArrowRight size={16} />
         </Link>

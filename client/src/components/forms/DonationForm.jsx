@@ -1,13 +1,18 @@
 import { useState } from 'react'
 import { CreditCard, Building2, AlertTriangle } from 'lucide-react'
-import Button from '@/components/ui/Button'
-import { cn } from '@/lib/cn'
 
-const PRESET_AMOUNTS = [5000, 10000, 25000, 50000, 100000]
-const PAYMENT_METHODS = [
-  { id: 'card',     label: 'Debit/Credit Card',  sub: 'Visa, Mastercard, Verve', icon: CreditCard },
-  { id: 'transfer', label: 'Bank Transfer',       sub: 'Direct bank transfer',    icon: Building2 },
+const PRESET_AMOUNTS   = [5000, 10000, 25000, 50000, 100000]
+const PAYMENT_METHODS  = [
+  { id: 'card',     label: 'Debit/Credit Card', sub: 'Visa, Mastercard, Verve', icon: CreditCard },
+  { id: 'transfer', label: 'Bank Transfer',      sub: 'Direct bank transfer',   icon: Building2  },
 ]
+const FREQUENCY_OPTIONS = [
+  { id: 'one-time', label: 'One-Time', sub: 'Make a single donation'      },
+  { id: 'monthly',  label: 'Monthly',  sub: 'Recurring monthly donation'  },
+]
+
+const selectedStyle  = { border: '2px solid var(--color-primary)', background: '#F0FDF4' }
+const unselectedStyle = { border: '2px solid #E5E7EB', background: 'white' }
 
 export default function DonationForm() {
   const [frequency,      setFrequency]      = useState('one-time')
@@ -25,69 +30,89 @@ export default function DonationForm() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-card p-6 lg:p-8 max-w-xl mx-auto">
-      <h2 className="text-heading-lg font-bold text-neutral-900 text-center mb-6">Complete Your Donation</h2>
+    <div
+      style={{
+        background: 'white',
+        borderRadius: '1rem',
+        boxShadow: '0 2px 20px rgba(0,0,0,0.08)',
+        padding: '2rem',
+        maxWidth: '580px',
+        margin: '0 auto',
+      }}
+    >
+      <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#111827', textAlign: 'center', marginBottom: '1.75rem' }}>
+        Complete Your Donation
+      </h2>
 
-      {/* Frequency toggle */}
-      <div className="mb-6">
-        <p className="form-label">Donation Frequency</p>
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { id: 'one-time', label: 'One-Time',  sub: 'Make a single donation' },
-            { id: 'monthly',  label: 'Monthly',   sub: 'Recurring monthly donation' },
-          ].map((opt) => (
+      {/* Donation Frequency */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <p style={{ fontSize: '0.8125rem', fontWeight: 500, color: '#374151', marginBottom: '0.625rem' }}>
+          Donation Frequency
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+          {FREQUENCY_OPTIONS.map((opt) => (
             <button
               key={opt.id}
               onClick={() => setFrequency(opt.id)}
-              className={cn(
-                'p-4 rounded-xl border-2 text-left transition-all duration-200',
-                frequency === opt.id
-                  ? 'border-primary-500 bg-primary-50'
-                  : 'border-neutral-200 hover:border-primary-300'
-              )}
+              style={{
+                padding: '0.875rem 1rem',
+                borderRadius: '0.75rem',
+                textAlign: 'left',
+                cursor: 'pointer',
+                transition: 'border-color 200ms, background 200ms',
+                ...(frequency === opt.id ? selectedStyle : unselectedStyle),
+              }}
             >
-              <p className="font-semibold text-neutral-900 text-body-sm">{opt.label}</p>
-              <p className="text-xs text-neutral-400 mt-0.5">{opt.sub}</p>
+              <p style={{ fontSize: '0.9375rem', fontWeight: 600, color: '#111827' }}>{opt.label}</p>
+              <p style={{ fontSize: '0.75rem', color: '#9CA3AF', marginTop: '0.125rem' }}>{opt.sub}</p>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Amount selector */}
-      <div className="mb-6">
-        <p className="form-label">Donation Amount (₦)</p>
-        <div className="grid grid-cols-3 gap-3">
+      {/* Donation Amount */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <p style={{ fontSize: '0.8125rem', fontWeight: 500, color: '#374151', marginBottom: '0.625rem' }}>
+          Donation Amount (₦)
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.625rem' }}>
           {PRESET_AMOUNTS.map((amount) => (
             <button
               key={amount}
               onClick={() => setSelectedAmount(amount)}
-              className={cn(
-                'py-3 px-2 rounded-xl border-2 text-sm font-semibold transition-all duration-200',
-                selectedAmount === amount
-                  ? 'border-primary-500 bg-primary-50 text-primary-700'
-                  : 'border-neutral-200 text-neutral-700 hover:border-primary-300'
-              )}
+              style={{
+                padding: '0.75rem 0.5rem',
+                borderRadius: '0.75rem',
+                fontSize: '0.9375rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'border-color 200ms, background 200ms, color 200ms',
+                color: selectedAmount === amount ? 'var(--color-primary)' : '#374151',
+                ...(selectedAmount === amount ? selectedStyle : unselectedStyle),
+              }}
             >
               ₦{amount.toLocaleString()}
             </button>
           ))}
-          {/* Custom */}
           <button
             onClick={() => setSelectedAmount('custom')}
-            className={cn(
-              'py-3 px-2 rounded-xl border-2 text-sm font-semibold transition-all duration-200',
-              isCustom
-                ? 'border-primary-500 bg-primary-50 text-primary-700'
-                : 'border-neutral-200 text-neutral-700 hover:border-primary-300'
-            )}
+            style={{
+              padding: '0.75rem 0.5rem',
+              borderRadius: '0.75rem',
+              fontSize: '0.9375rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'border-color 200ms, background 200ms, color 200ms',
+              color: isCustom ? 'var(--color-primary)' : '#374151',
+              ...(isCustom ? selectedStyle : unselectedStyle),
+            }}
           >
             Custom
           </button>
         </div>
 
-        {/* Custom input */}
         {isCustom && (
-          <div className="mt-3">
+          <div style={{ marginTop: '0.75rem' }}>
             <input
               type="number"
               value={customAmount}
@@ -100,27 +125,41 @@ export default function DonationForm() {
         )}
       </div>
 
-      {/* Payment method */}
-      <div className="mb-6">
-        <p className="form-label">Payment Method</p>
-        <div className="flex flex-col gap-3">
+      {/* Payment Method */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <p style={{ fontSize: '0.8125rem', fontWeight: 500, color: '#374151', marginBottom: '0.625rem' }}>
+          Payment Method
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
           {PAYMENT_METHODS.map(({ id, label, sub, icon: Icon }) => (
             <button
               key={id}
-              onClick={() => setPaymentMethod(id)}
-              className={cn(
-                'flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all duration-200',
-                paymentMethod === id
-                  ? 'border-primary-500 bg-primary-50'
-                  : 'border-neutral-200 hover:border-primary-300'
-              )}
+              onClick={() => {
+                setPaymentMethod(id)
+                if (id === 'transfer') {
+                  setTimeout(() => {
+                    document.getElementById('bank-transfer-details')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  }, 120)
+                }
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                padding: '1rem',
+                borderRadius: '0.75rem',
+                textAlign: 'left',
+                cursor: 'pointer',
+                transition: 'border-color 200ms, background 200ms',
+                ...(paymentMethod === id ? selectedStyle : unselectedStyle),
+              }}
             >
               <div className="icon-box-sm">
                 <Icon size={16} />
               </div>
               <div>
-                <p className="font-semibold text-neutral-900 text-body-sm">{label}</p>
-                <p className="text-xs text-neutral-400">{sub}</p>
+                <p style={{ fontSize: '0.9375rem', fontWeight: 600, color: '#111827' }}>{label}</p>
+                <p style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>{sub}</p>
               </div>
             </button>
           ))}
@@ -129,14 +168,39 @@ export default function DonationForm() {
 
       {/* CTA */}
       {!canProceed ? (
-        <div className="flex items-center gap-2 justify-center py-3 px-4 rounded-xl bg-neutral-100 text-neutral-400 text-sm">
-          <AlertTriangle size={16} />
+        <div
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+            padding: '0.875rem 1rem',
+            borderRadius: '0.75rem',
+            background: '#D1D5DC',
+            color: '#6A7282',
+            fontSize: '0.875rem',
+          }}
+        >
+          <AlertTriangle size={15} />
           Select an amount to continue
         </div>
       ) : (
-        <Button variant="primary" size="lg" className="w-full" onClick={handleSubmit}>
+        <button
+          onClick={handleSubmit}
+          style={{
+            width: '100%',
+            padding: '0.9rem',
+            borderRadius: '0.75rem',
+            background: 'var(--color-btn-orange)',
+            color: 'white',
+            fontSize: '1rem',
+            fontWeight: 600,
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'background 200ms',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-btn-orange-dark)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--color-btn-orange)' }}
+        >
           Donate ₦{Number(finalAmount).toLocaleString()}
-        </Button>
+        </button>
       )}
     </div>
   )

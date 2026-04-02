@@ -18,6 +18,7 @@ export default function PageHeroBanner({
   backgroundImage,
   backLink,
   children,
+  centerText = false,
   className = '',
 }) {
   return (
@@ -57,6 +58,8 @@ export default function PageHeroBanner({
             maxWidth: '48rem',
             textWrap: 'balance',
             lineHeight: 1.2,
+            textAlign: centerText ? 'center' : 'left',
+            margin: centerText ? '0 auto' : undefined,
           }}
         >
           {title}
@@ -70,6 +73,8 @@ export default function PageHeroBanner({
               fontSize: '1rem',
               maxWidth: '40rem',
               lineHeight: 1.65,
+              textAlign: centerText ? 'center' : 'left',
+              margin: centerText ? '0.75rem auto 0' : undefined,
             }}
           >
             {subtitle}

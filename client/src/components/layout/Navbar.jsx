@@ -21,16 +21,16 @@ const NAV_LINKS = [
   { label: 'Blog',        to: '/blog' },
 ]
 
-const navLinkBase = 'block px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200'
-const navLinkIdle = 'text-gray-700'
-const navLinkHover = 'hover:bg-[#F0FDF4] hover:text-[#4F7B44]'
-const navLinkActive = 'bg-[#F0FDF4] text-[#4F7B44]'
+const base    = 'block px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200'
+const idle    = 'text-gray-700'
+const hover   = 'hover:bg-[#F0FDF4] hover:text-[#4F7B44]'
+const active  = 'bg-[#F0FDF4] text-[#4F7B44]'
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
+  const [isOpen, setIsOpen]           = useState(false)
+  const [scrolled, setScrolled]       = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(null)
-  const { pathname } = useLocation()
+  const { pathname }                  = useLocation()
 
   useEffect(() => { setIsOpen(false); setDropdownOpen(null) }, [pathname])
 
@@ -59,59 +59,68 @@ export default function Navbar() {
 
         {/* Desktop nav */}
         <ul className="hidden lg:flex items-center gap-0.5">
-          {NAV_LINKS.map((link) =>
-            link.children ? (
-              <li key={link.label} className="relative">
-                <button
-                  onMouseEnter={() => setDropdownOpen(link.label)}
-                  onMouseLeave={() => setDropdownOpen(null)}
-                  className={cn(navLinkBase, navLinkIdle, navLinkHover, 'flex items-center gap-1')}
-                >
-                  {link.label}
-                  <ChevronDown
-                    size={14}
-                    className={cn('transition-transform duration-200', dropdownOpen === link.label && 'rotate-180')}
-                  />
-                </button>
+          {NAV_LINKS.map((link) => {
+            if (link.children) {
+              const childPaths  = link.children.map((c) => c.to)
+              const parentActive = childPaths.some((p) => pathname === p || pathname.startsWith(p + '/'))
 
-                {dropdownOpen === link.label && (
-                  <div
-                    className="absolute top-full left-0 mt-1 bg-white rounded-xl py-2 min-w-[160px]"
-                    style={{ boxShadow: 'var(--shadow-card-hover)', border: '1px solid #F3F4F6' }}
+              return (
+                <li key={link.label} className="relative">
+                  <button
                     onMouseEnter={() => setDropdownOpen(link.label)}
                     onMouseLeave={() => setDropdownOpen(null)}
+                    className={cn(
+                      base, 'flex items-center gap-1',
+                      parentActive ? active : cn(idle, hover)
+                    )}
                   >
-                    {link.children.map((child) => (
-                      <NavLink
-                        key={child.to}
-                        to={child.to}
-                        className={({ isActive }) =>
-                          cn('block px-4 py-2 text-sm transition-colors duration-200',
-                            isActive
-                              ? 'text-[#4F7B44] font-medium bg-[#F0FDF4]'
-                              : 'text-gray-700 hover:bg-[#F0FDF4] hover:text-[#4F7B44]')
-                        }
-                      >
-                        {child.label}
-                      </NavLink>
-                    ))}
-                  </div>
-                )}
-              </li>
-            ) : (
+                    {link.label}
+                    <ChevronDown
+                      size={14}
+                      className={cn('transition-transform duration-200', dropdownOpen === link.label && 'rotate-180')}
+                    />
+                  </button>
+
+                  {dropdownOpen === link.label && (
+                    <div
+                      className="absolute top-full left-0 mt-1 bg-white rounded-xl py-2 min-w-[160px]"
+                      style={{ boxShadow: 'var(--shadow-card-hover)', border: '1px solid #F3F4F6' }}
+                      onMouseEnter={() => setDropdownOpen(link.label)}
+                      onMouseLeave={() => setDropdownOpen(null)}
+                    >
+                      {link.children.map((child) => (
+                        <NavLink
+                          key={child.to}
+                          to={child.to}
+                          end
+                          className={({ isActive }) =>
+                            cn('block px-4 py-2 text-sm transition-colors duration-200',
+                              isActive
+                                ? 'text-[#4F7B44] font-medium bg-[#F0FDF4]'
+                                : 'text-gray-700 hover:bg-[#F0FDF4] hover:text-[#4F7B44]')
+                          }
+                        >
+                          {child.label}
+                        </NavLink>
+                      ))}
+                    </div>
+                  )}
+                </li>
+              )
+            }
+
+            return (
               <li key={link.label}>
                 <NavLink
                   to={link.to}
                   end={link.to === '/'}
-                  className={({ isActive }) =>
-                    cn(navLinkBase, isActive ? navLinkActive : cn(navLinkIdle, navLinkHover))
-                  }
+                  className={({ isActive }) => cn(base, isActive ? active : cn(idle, hover))}
                 >
                   {link.label}
                 </NavLink>
               </li>
             )
-          )}
+          })}
         </ul>
 
         {/* CTA + hamburger */}
@@ -133,32 +142,42 @@ export default function Navbar() {
       {isOpen && (
         <div className="lg:hidden bg-white px-4 pb-6 pt-4" style={{ borderTop: '1px solid #F3F4F6' }}>
           <ul className="flex flex-col gap-0.5">
-            {NAV_LINKS.map((link) => (
-              <li key={link.label}>
-                <NavLink
-                  to={link.to}
-                  end={link.to === '/'}
-                  className={({ isActive }) =>
-                    cn('block px-4 py-3 rounded-xl text-sm font-medium transition-colors duration-200',
-                      isActive ? 'bg-[#F0FDF4] text-[#4F7B44]' : 'text-gray-700 hover:bg-[#F0FDF4] hover:text-[#4F7B44]')
-                  }
-                >
-                  {link.label}
-                </NavLink>
-                {link.children?.map((child) => (
+            {NAV_LINKS.map((link) => {
+              const childPaths   = link.children?.map((c) => c.to) ?? []
+              const parentActive = childPaths.some((p) => pathname === p || pathname.startsWith(p + '/'))
+
+              return (
+                <li key={link.label}>
                   <NavLink
-                    key={child.to}
-                    to={child.to}
+                    to={link.to}
+                    end={link.to === '/' || (!link.children)}
                     className={({ isActive }) =>
-                      cn('block px-8 py-2.5 rounded-xl text-sm transition-colors duration-200',
-                        isActive ? 'text-[#4F7B44] font-medium' : 'text-gray-500 hover:bg-[#F0FDF4] hover:text-[#4F7B44]')
+                      cn('block px-4 py-3 rounded-xl text-sm font-medium transition-colors duration-200',
+                        (isActive || parentActive)
+                          ? 'bg-[#F0FDF4] text-[#4F7B44]'
+                          : 'text-gray-700 hover:bg-[#F0FDF4] hover:text-[#4F7B44]')
                     }
                   >
-                    {child.label}
+                    {link.label}
                   </NavLink>
-                ))}
-              </li>
-            ))}
+                  {link.children?.map((child) => (
+                    <NavLink
+                      key={child.to}
+                      to={child.to}
+                      end
+                      className={({ isActive }) =>
+                        cn('block px-8 py-2.5 rounded-xl text-sm transition-colors duration-200',
+                          isActive
+                            ? 'text-[#4F7B44] font-medium'
+                            : 'text-gray-500 hover:bg-[#F0FDF4] hover:text-[#4F7B44]')
+                      }
+                    >
+                      {child.label}
+                    </NavLink>
+                  ))}
+                </li>
+              )
+            })}
           </ul>
           <Button as={Link} to="/donate" variant="primary" className="w-full mt-4">
             Make a Donation
